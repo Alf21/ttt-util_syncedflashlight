@@ -12,11 +12,11 @@ AddCSLuaFile("cl_sfl.lua")
 
 local pjs = pjs or {}
 
-CreateConVar("sfl_enabled", "1", {FCVAR_ARCHIVE, FCVAR_NOTIFY})
-CreateConVar("sfl_light_forward_offset", "15", {FCVAR_ARCHIVE, FCVAR_NOTIFY})
+local sfl_enabled = CreateConVar("sfl_enabled", "1", {FCVAR_ARCHIVE, FCVAR_NOTIFY})
+local sfl_light_forward_offset = CreateConVar("sfl_light_forward_offset", "15", {FCVAR_ARCHIVE, FCVAR_NOTIFY})
 
 function SFL_ShouldUse()
-	if GetConVar("sfl_enabled"):GetInt() ~= 0 then
+	if sfl_enabled:GetInt() ~= 0 then
 		return true
 	end
 
@@ -28,7 +28,7 @@ function SFL_SetupProjectedTexture(ply)
 
 	if SERVER then
 		pjs[ply] = ents.Create("env_projectedtexture")
-		pjs[ply]:SetPos(ply:EyePos() + ply:EyeAngles():Forward() * GetConVar("sfl_light_forward_offset"):GetInt())
+		pjs[ply]:SetPos(ply:EyePos() + ply:EyeAngles():Forward() * sfl_light_forward_offset:GetInt())
 		pjs[ply]:SetAngles(ply:EyeAngles())
 		pjs[ply]:SetKeyValue("enableshadows", 1)
 		pjs[ply]:SetKeyValue("farz", 750)
@@ -152,4 +152,21 @@ hook.Add("PlayerSwitchFlashlight", "SFL_SwitchFlashlightHook", function(ply, sta
 	SFL_SwitchFlashlight(ply, nil)
 
 	return false
+end)
+
+hook.Add("InitCvars", "InitSFLCvars", function()
+	SetGlobalBool("sfl_enabled", sfl_enabled:GetBool())
+	SetGlobalInt("sfl_light_forward_offset", sfl_light_forward_offset:GetInt())
+end)
+
+cvars.AddChangeCallback("sfl_enabled", function(name, old, new)
+	if old ~= new then
+		SetGlobalBool("sfl_enabled", sfl_enabled:GetBool())
+	end
+end)
+
+cvars.AddChangeCallback("sfl_light_forward_offset", function(name, old, new)
+	if old ~= new then
+		SetGlobalInt("sfl_light_forward_offset", sfl_light_forward_offset:GetInt())
+	end
 end)
