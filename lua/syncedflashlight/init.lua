@@ -8,8 +8,6 @@
 -- -------------- TTT Compatibility and cutted by Alf21 -------------- --
 -- ------------------------------------------------------------------- --
 
-AddCSLuaFile("cl_sfl.lua")
-
 local pjs = pjs or {}
 
 local sfl_enabled = CreateConVar("sfl_enabled", "1", {FCVAR_ARCHIVE, FCVAR_NOTIFY})
